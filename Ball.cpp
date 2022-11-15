@@ -34,13 +34,19 @@ bool Ball::CollisionWithField(const int sizeHor,const int sizeVert, const int si
 {
     bool flag =0;
 
-    // check X coordinate-----------------------
-    if (round(ball.getPosition().x+2*ball.getRadius()) >= sizeHor || round(ball.getPosition().x) < 1 )
+    // check collision with field and desk X coordinate-----------------------
+    if (round(ball.getPosition().x+2*ball.getRadius()) >= sizeHor || round(ball.getPosition().x) < 1 ||
+
+	 (round(ball.getPosition().x+2*ball.getRadius()) >= posDesk && round(ball.getPosition().x+2*ball.getRadius()) <= posDesk+sizeDeskX) &&
+	  round(ball.getPosition().y + ball.getRadius()) > sizeVert-sizeDeskY ||
+	  
+	 (round(ball.getPosition().x) <= posDesk+sizeDeskX && round(ball.getPosition().x) >= posDesk &&
+	  round(ball.getPosition().y + ball.getRadius()) >= sizeVert-sizeDeskY))
         {
             angle *=-1;
             flag = 1; 
         }
-	// check Y coordinate
+	// check collision with field and desk Y coordinate
     if (round(ball.getPosition().y) <= 1 ||
 		(round(ball.getPosition().y + 2*ball.getRadius()) >= sizeVert-sizeDeskY) && CollisionBallAndDeskOnX(round(ball.getPosition().x),round(posDesk), sizeDeskX, sizeDeskY))
 	{
@@ -51,7 +57,7 @@ bool Ball::CollisionWithField(const int sizeHor,const int sizeVert, const int si
 		speedX *= -1;
 		flag = 1;
 	}
-	else if (round(ball.getPosition().y + 2*ball.getRadius()) >= (sizeVert-sizeDeskY/2))
+	else if (round(ball.getPosition().y + 2*ball.getRadius()) >= (sizeVert))
 	{
 		collision =1;
 	}
