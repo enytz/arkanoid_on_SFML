@@ -3,6 +3,8 @@
 #include "Window.h"
 #include "Ball.h"
 #include "Desk.h"
+#include "tty.h"
+
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <thread>
@@ -15,7 +17,8 @@ class Game
         void Update();
         void LateUpdate();
         void Draw();
-        bool IsRunning() const;
+        bool IsRunning();
+        void ReadDataTTY();
         void GameOver(sf::Text& text);
 
     private:
@@ -23,6 +26,8 @@ class Game
         Window window;
         Ball ball;
         Desk desk;
+        TTY ttyData;
+        std::atomic<bool> state;
         sf::Text text;
 
 };

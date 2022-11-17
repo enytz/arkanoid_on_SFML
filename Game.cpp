@@ -1,18 +1,24 @@
 #include "Game.h"
 
 Game::Game()
-    : window("EnterName"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT){}
+    : window("EnterName"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT), state (true)
+    {
+        ttyData.set_settings_tty();    
+    }
 
 
 void Game::Update()
 {
     window.Update();
     ball.Move();
+    desk.Move();
+
 }
 
 void Game::LateUpdate()
 {
-    ball.CheckCollision(SIZE_HOR, SIZE_VERT,desk.GetRefRect().getSize().x,desk.GetRefRect().getSize().y, desk.GetRefRect().getPosition().x);
+    ball.CheckCollision(SIZE_HOR, SIZE_VERT,desk.GetRefRect().getSize().x,desk.GetRefRect().getSize().y, desk.GetRefRect().getPosition().x, state);
+    desk.CheckCollision(SIZE_HOR, SIZE_VERT,ttyData.get_value_sensor());
 }
 
 void Game::Draw()
@@ -20,19 +26,27 @@ void Game::Draw()
     window.BeginDraw();
     window.Draw(ball.GetRefBall());
     window.Draw(desk.GetRefRect());
+    window.Draw(text);
     //if ()
     {
       //  GameOver(text);
        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     window.EndDraw();
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
 }
 
-bool Game::IsRunning() const
+bool Game::IsRunning() 
 {
-    while (window.IsOpen() && !(ball.IsQuit()))
+    while (window.IsOpen() && !(ball.IsQuit()) && state)
         return true;
+    state = false;      // for case if IsQuit or IsOpen generate quit
     return false;
+}
+
+void Game::ReadDataTTY()
+{
+    ttyData.read_data(state);
 }
 
 void Game::GameOver(sf::Text& text)

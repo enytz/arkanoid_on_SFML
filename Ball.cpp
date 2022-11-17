@@ -2,7 +2,7 @@
 #include <iostream>
 
 Ball::Ball(const int SizeWindowHor, const int SizeWindowVert,const float radius)
-    :angle(20), speedX(10), speedY(10), dx(speedX* cos(degtorad(angle))), dy(speedY* sin(degtorad(angle))), collision(0)        // add set settings for angle
+    :angle(-20), speedX(10), speedY(10), dx(speedX* cos(degtorad(angle))), dy(speedY* sin(degtorad(angle))), collision(0)        // add set settings for angle
 {
     ball.setRadius(radius);
     ball.setFillColor(sf::Color::Blue);
@@ -20,9 +20,9 @@ void Ball::Move()
     ball.setPosition(pos);
 }
 
-void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk)
+void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state)
 {
-    if (CollisionWithField(SizeHor, SizeVert, sizeDeskX, sizeDeskY, posDesk))
+    if (CollisionWithFieldAndBall(SizeHor, SizeVert, sizeDeskX, sizeDeskY, posDesk, state))
 	{
 		float val = degtorad(angle);
 		dx = speedX * cos(val);
@@ -30,16 +30,16 @@ void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeD
 	}
 }
 
-bool Ball::CollisionWithField(const int sizeHor,const int sizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk)
+bool Ball::CollisionWithFieldAndBall(const int sizeHor,const int sizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state)
 {
     bool flag =0;
 
     // check collision with field and desk X coordinate-----------------------
     if (round(ball.getPosition().x+2*ball.getRadius()) >= sizeHor || round(ball.getPosition().x) < 1 ||
 
-	 (round(ball.getPosition().x+2*ball.getRadius()) >= posDesk && round(ball.getPosition().x+2*ball.getRadius()) <= posDesk+sizeDeskX) &&
-	  round(ball.getPosition().y + ball.getRadius()) > sizeVert-sizeDeskY ||
-	  
+	 (round(ball.getPosition().x+2*ball.getRadius()) >= posDesk && round(ball.getPosition().x+2*ball.getRadius()) <= posDesk+sizeDeskX &&
+	  round(ball.getPosition().y + ball.getRadius()) > sizeVert-sizeDeskY) ||
+
 	 (round(ball.getPosition().x) <= posDesk+sizeDeskX && round(ball.getPosition().x) >= posDesk &&
 	  round(ball.getPosition().y + ball.getRadius()) >= sizeVert-sizeDeskY))
         {
@@ -60,6 +60,7 @@ bool Ball::CollisionWithField(const int sizeHor,const int sizeVert, const int si
 	else if (round(ball.getPosition().y + 2*ball.getRadius()) >= (sizeVert))
 	{
 		collision =1;
+		state = 0;
 	}
 
  	return flag ? 1 : 0;
