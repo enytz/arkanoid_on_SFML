@@ -17,17 +17,14 @@
 struct TTY
 {
     public:
-    	TTY()
-    		:buf_int(0)
-     		{serial_port = open("/dev/ttyACM0",O_RDWR);}
-    	~TTY() {std::cout<<"~tty"; /*std::cout.flush();*/ close(serial_port);}
-    	void set_settings_tty();
+    	TTY();
+    	~TTY();
     	void read_data(std::atomic<bool>& state);
     	int get_value_sensor() const;
 		void write_log_sensor_data(const char* buf);
     private:
         int serial_port;
-        termios tty;
+        termios tty,oldtty;
         char buf[3];            // max bit depth for sensor (~300 cm)
         int buf_int;
         

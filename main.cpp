@@ -12,7 +12,5 @@ int main()
         game.Draw();
     }
     thread2.join();
-    std::cout<<"END\n";
-    std::cout.flush();
     return 0;
 }

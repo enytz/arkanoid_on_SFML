@@ -14,14 +14,21 @@ void TTY::write_log_sensor_data(const char* buf)
 	fputs(std::to_string(buf_int).c_str(),file.get());
 }
 
-void TTY::set_settings_tty()
+TTY::TTY()
+    :buf_int(0)
 {
+    serial_port = open("/dev/ttyACM0",O_RDONLY);
     // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
     if (tcgetattr(serial_port,&tty) !=0)
     {
         perror("Error ");
         return;
     }
+    if (tcgetattr(serial_port,&oldtty) != 0)
+    {
+        perror("Error reading settings: ");
+    }
+
 
     tty.c_cflag &= ~PARENB; // clear parity bit, disabling parity
     tty.c_cflag &= ~CSTOPB; // clear stop field, 1 stop bit
@@ -30,11 +37,12 @@ void TTY::set_settings_tty()
     tty.c_cflag &= ~CRTSCTS;    // disable RTS/CTS hardware flow control
     tty.c_cflag |= CREAD | CLOCAL;  // turn on read& ignore ctrl lines
 
-    tty.c_iflag &= ~ICANON;
-    tty.c_iflag &= ~ECHO;   // disable echo
-    tty.c_iflag &= ~ECHOE;  // disable earsure
-    tty.c_iflag &= ~ECHONL; // disable new-line echo
-    tty.c_iflag &= ~ISIG;   // disable interpretation of INTR, QUIT and SUSP
+    tty.c_lflag &= ~ICANON;
+    tty.c_lflag &= ~ECHO;   // disable echo
+    tty.c_lflag &= ~ECHOE;  // disable earsure
+    tty.c_lflag &= ~ECHONL; // disable new-line echo
+    tty.c_lflag &= ~ISIG;   // disable interpretation of INTR, QUIT and SUSP
+
     tty.c_iflag &= ~(IXON | IXOFF | IXANY); //turn off s/w flow ctrl
     tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
 
@@ -42,7 +50,7 @@ void TTY::set_settings_tty()
     tty.c_oflag &= ~ONLCR;  // prevent conversion of newline to carriage return/line feed
 
     // setting time delay for waiting data
-    tty.c_cc[VTIME] = 10;      // wait for up 1s (10*100ms)
+    tty.c_cc[VTIME] = 10;      // wait for up 1s (10*100ms), 100 ms =1
     tty.c_cc[VMIN] = 0;
 
     cfsetispeed(&tty,B9600);
@@ -53,6 +61,14 @@ void TTY::set_settings_tty()
         perror("Error from tcsetattr ");
         return;
     }
+}
+
+TTY::~TTY()
+{
+    tcsetattr(serial_port,TCSANOW, &oldtty);
+    close(serial_port);
+    std::cout<<"~tty";
+    std::cout.flush();
 }
 
 void TTY::read_data(std::atomic<bool>& state)
@@ -72,9 +88,7 @@ void TTY::read_data(std::atomic<bool>& state)
         //write_log_sensor_data(buf);
         std::this_thread::sleep_for(std::chrono::milliseconds(TIME_REQUEST));     // request every delta time
     }
-    std::cout<<"State = "<<state<<std::endl;
-    std::cout.flush();
-};
+}
 
 int TTY::get_value_sensor() const
 {

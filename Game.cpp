@@ -1,11 +1,7 @@
 #include "Game.h"
 
 Game::Game()
-    : window("EnterName"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT), state (true)
-    {
-        ttyData.set_settings_tty();    
-    }
-
+    : window("EnterName"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT), state (true) {}
 
 void Game::Update()
 {
