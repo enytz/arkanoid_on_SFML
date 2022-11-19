@@ -9,6 +9,7 @@ class Desk
     Desk(const int SizeWindowHor, const int SizeWindowVert, int sizeRectHor= 100, int sizeRectVert = 30);
     void Move();
     void CheckCollision(int SizeWindowHor, int SizeWindowVert, int valueSensor);
+    void CheckCollisionKeyPressed(int SizeWindowHor, int SizeWindowVert);
     const sf::RectangleShape& GetRefRect(){ return desk;}
 
     private:

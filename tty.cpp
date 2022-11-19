@@ -67,8 +67,8 @@ TTY::~TTY()
 {
     tcsetattr(serial_port,TCSANOW, &oldtty);
     close(serial_port);
-    std::cout<<"~tty";
-    std::cout.flush();
+    //std::cout<<"~tty";
+    //std::cout.flush();
 }
 
 void TTY::read_data(std::atomic<bool>& state)

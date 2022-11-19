@@ -18,6 +18,7 @@ class Game
         void LateUpdate();
         void Draw();
         bool IsRunning();
+        //bool Restart();
         void ReadDataTTY();
         void GameOver(sf::Text& text);
 

@@ -10,9 +10,9 @@
 #include <atomic>
 #include <thread>
 
-#define TIME_REQUEST 30  // time (ms) request in buf_int 
-
 #include <iostream>
+
+#define TIME_REQUEST 30  // time (ms) request in buf_int 
 
 struct TTY
 {

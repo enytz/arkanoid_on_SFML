@@ -2,7 +2,7 @@
 #define Window_h
 #include <SFML/Graphics.hpp>
 #include <string>
-#define SIZE_HOR 400
+#define SIZE_HOR 600
 #define SIZE_VERT 600
 
 class Window

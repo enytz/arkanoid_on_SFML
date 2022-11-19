@@ -66,3 +66,32 @@ void Desk::CheckCollision(int SizeWindowHor, int SizeWindowVert, int valueSensor
 			dx =3;
 		}
 }
+
+void Desk::CheckCollisionKeyPressed(int SizeWindowHor, int SizeWindowVert)
+{
+	sf::Vector2f rectPos;
+    rectPos = desk.getPosition();
+    if (rectPos.x <= 0)
+	{
+		rectPos.x = 1;
+        desk.setPosition(rectPos);
+	}
+	else if (rectPos.x + desk.getSize().x >= SizeWindowHor )
+	{
+		rectPos.x = SizeWindowHor-desk.getSize().x;
+        desk.setPosition(rectPos);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		dx = -1;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		dx = 1;
+	}
+	else
+	{
+		dx =0;
+	}
+}

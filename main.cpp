@@ -4,13 +4,13 @@
 int main()
 {
     Game game;
-    std::thread thread2 ([&game](){game.ReadDataTTY();});
+    //std::thread thread2 ([&game](){game.ReadDataTTY();});
     while (game.IsRunning())
     {   
         game.Update();
         game.LateUpdate();
         game.Draw();
     }
-    thread2.join();
+    //thread2.join();
     return 0;
 }
