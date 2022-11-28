@@ -18,18 +18,18 @@ class Game
         void LateUpdate();
         void Draw();
         bool IsRunning();
-        //bool Restart();
+        bool Restart();
         void ReadDataTTY();
-        void GameOver(sf::Text& text);
 
     private:
+        bool GameOver();
         void CollisionDeskAndBall();
         Window window;
         Ball ball;
         Desk desk;
         TTY ttyData;
         std::atomic<bool> state;
-        sf::Text text;
+        sf::Font font;
 
 };
 

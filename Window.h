@@ -1,4 +1,5 @@
 #ifndef Window_h
+
 #define Window_h
 #include <SFML/Graphics.hpp>
 #include <string>

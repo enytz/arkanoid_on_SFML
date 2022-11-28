@@ -17,6 +17,7 @@ class Ball
     void CheckCollision(const int SizeHor, const int SizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state);
     const sf::CircleShape& GetRefBall(){ return ball;}
     bool IsQuit() const{return collision;}
+    void SetDefaultPosition(const int SizeWindowHor, const int SizeWindowVert);
 
 private:
     sf::CircleShape ball;

@@ -1,4 +1,4 @@
-# include "Ball.h"
+#include "Ball.h"
 #include <iostream>
 
 Ball::Ball(const int SizeWindowHor, const int SizeWindowVert,const float radius)
@@ -6,10 +6,7 @@ Ball::Ball(const int SizeWindowHor, const int SizeWindowVert,const float radius)
 {
     ball.setRadius(radius);
     ball.setFillColor(sf::Color::Blue);
-    sf::Vector2f pos;
-    pos.x = SizeWindowHor/2;
-    pos.y = radius;
-    ball.setPosition(pos);
+    Ball::SetDefaultPosition(SizeWindowHor,SizeWindowVert);
 }
 
 void Ball::Move()
@@ -18,6 +15,15 @@ void Ball::Move()
     pos.x +=dx;
     pos.y +=dy;
     ball.setPosition(pos);
+}
+
+void Ball::SetDefaultPosition(const int SizeWindowHor, const int SizeWindowVert)
+{
+	sf::Vector2f pos;
+    pos.x = SizeWindowHor/2;
+    pos.y = ball.getRadius();
+    ball.setPosition(pos);
+	collision = 0;
 }
 
 void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state)

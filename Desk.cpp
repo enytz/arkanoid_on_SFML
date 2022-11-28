@@ -8,10 +8,7 @@ Desk::Desk(const int SizeWindowHor, const int SizeWindowVert, int sizeRectHor, i
     rectSz.y = sizeRectVert;
     desk.setSize(rectSz);
     desk.setFillColor(sf::Color::Green);
-    sf::Vector2f pos;
-    pos.x = SizeWindowHor/2-sizeRectHor/2;
-    pos.y = SizeWindowVert-sizeRectVert;
-    desk.setPosition(pos);
+    Desk::SetDefaultPosition(SizeWindowHor, SizeWindowVert);
 }
 
 void Desk::Move()
@@ -94,4 +91,12 @@ void Desk::CheckCollisionKeyPressed(int SizeWindowHor, int SizeWindowVert)
 	{
 		dx =0;
 	}
+}
+
+void Desk::SetDefaultPosition(const int SizeWindowHor, const int SizeWindowVert)
+{
+	sf::Vector2f pos;
+	pos.x = SizeWindowHor/2-desk.getSize().x/2;
+    pos.y = SizeWindowVert-desk.getSize().y;
+    desk.setPosition(pos);
 }
