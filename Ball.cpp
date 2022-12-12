@@ -2,11 +2,11 @@
 #include <iostream>
 
 Ball::Ball(const int SizeWindowHor, const int SizeWindowVert,const float radius)
-    :angle(-20), speedX(10), speedY(10), dx(speedX* cos(degtorad(angle))), dy(speedY* sin(degtorad(angle))), collision(0)        // add set settings for angle
+    //:angle(GenerateAngle()), speedX(10), speedY(10), dx(speedX* cos(degtorad(angle))), dy(speedY* sin(degtorad(angle))), collision(0), scoreCollisions(0)        // add set settings for angle
 {
     ball.setRadius(radius);
     ball.setFillColor(sf::Color::Blue);
-    Ball::SetDefaultPosition(SizeWindowHor,SizeWindowVert);
+    Ball::SetDefaultSettings(SizeWindowHor,SizeWindowVert);
 }
 
 void Ball::Move()
@@ -17,13 +17,21 @@ void Ball::Move()
     ball.setPosition(pos);
 }
 
-void Ball::SetDefaultPosition(const int SizeWindowHor, const int SizeWindowVert)
+void Ball::SetDefaultSettings(const int SizeWindowHor, const int SizeWindowVert)
 {
+	//std::cout<<"Old "<< speedX<<' '<<speedY<<std::endl;
 	sf::Vector2f pos;
     pos.x = SizeWindowHor/2;
     pos.y = ball.getRadius();
     ball.setPosition(pos);
+	angle = GenerateAngle();
+	speedX = 10.0;
+	speedY = 10.0;
+	dx = speedX* cos(degtorad(angle));
+	dy = speedX* sin(degtorad(angle));
 	collision = 0;
+	scoreCollisions =0;
+	//std::cout<<"New "<< speedX<<' '<<speedY<<std::endl;
 }
 
 void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state)
@@ -39,49 +47,91 @@ void Ball::CheckCollision(const int SizeHor, const int SizeVert, const int sizeD
 bool Ball::CollisionWithFieldAndBall(const int sizeHor,const int sizeVert, const int sizeDeskX, const int sizeDeskY, const int posDesk, std::atomic<bool>& state)
 {
     bool flag =0;
+	float radius = ball.getRadius();
+	sf::Vector2f ballPosition = ball.getPosition();
 
-    // check collision with field and desk X coordinate-----------------------
-    if (round(ball.getPosition().x+2*ball.getRadius()) >= sizeHor || round(ball.getPosition().x) < 1 ||
-
-	 (round(ball.getPosition().x+2*ball.getRadius()) >= posDesk && round(ball.getPosition().x+2*ball.getRadius()) <= posDesk+sizeDeskX &&
-	  round(ball.getPosition().y + ball.getRadius()) > sizeVert-sizeDeskY) ||
-
-	 (round(ball.getPosition().x) <= posDesk+sizeDeskX && round(ball.getPosition().x) >= posDesk &&
-	  round(ball.getPosition().y + ball.getRadius()) >= sizeVert-sizeDeskY))
-        {
-            angle *=-1;
-            flag = 1; 
-        }
-	// check collision with field and desk Y coordinate
-    if (round(ball.getPosition().y) <= 1 ||
-		(round(ball.getPosition().y + 2*ball.getRadius()) >= sizeVert-sizeDeskY) && CollisionBallAndDeskOnX(round(ball.getPosition().x),round(posDesk), sizeDeskX, sizeDeskY))
+	//  check collision with vertical field line
+	if (ballPosition.x <= 0 || ballPosition.x+2*radius >= sizeHor)
 	{
+		angle *=-1;
+		return 1;
+	}
+
+	// check collison with horizontal field line
+	if (ballPosition.y <= 0)
+		{
+			if (angle < 0)
+				angle -= 180;
+			else
+				angle += 180;
+			speedX *= -1;
+			return 1;
+		}
+	if (ballPosition.y+2*radius >= sizeVert)
+		{
+			collision =1;
+			state = 0;
+			return 1;
+		}
+	
+	// check collision ball and desk on Oy
+
+	if (ballPosition.y >= sizeVert-sizeDeskY-2*radius && (ballPosition.x >= posDesk && ballPosition.x <= posDesk+sizeDeskX))
+	{
+		sf::Vector2f pos;
+		pos.y = sizeVert-sizeDeskY-2*radius-2;
+		pos.x = ball.getPosition().x;
+		ball.setPosition(pos);
 		if (angle < 0)
 			angle -= 180;
 		else
 			angle += 180;
 		speedX *= -1;
-		flag = 1;
+		speedX *=1.05; // boost ball in case every cycle of the collision desk and ball
+		speedY *=1.05; //
+		++scoreCollisions;		// for save score after every game
+		return 1;
 	}
-	else if (round(ball.getPosition().y + 2*ball.getRadius()) >= (sizeVert))
+
+	// check collision ball and desk on Ox
+
+	if (ballPosition.x >= posDesk-2*radius && ballPosition.x <= posDesk+sizeDeskX-radius && ballPosition.y >= sizeVert - sizeDeskY- radius)
 	{
-		collision =1;
-		state = 0;
+		angle *=-1;
+		return 1;
 	}
-
- 	return flag ? 1 : 0;
+	
+	// check collision on angle of the rectangle
+	float distanceToAngleRectLeft = sqrt((ballPosition.x+radius-posDesk)*(ballPosition.x+radius-posDesk)+(ballPosition.y+radius-(sizeVert-sizeDeskY))*(ballPosition.y+radius-(sizeVert-sizeDeskY)));
+	float distanceToAngleRectRigth = sqrt((ballPosition.x+radius-(posDesk+sizeDeskX))*(ballPosition.x+radius-(posDesk+sizeDeskX))+ (ballPosition.y+radius-(sizeVert-sizeDeskY))*(ballPosition.y+radius-(sizeVert-sizeDeskY)));
+	if (distanceToAngleRectLeft - radius <=3 || distanceToAngleRectRigth - radius <= 3)
+	{
+		if (angle < 0)
+			angle -= 180;
+		else
+			angle += 180;
+		++scoreCollisions;		// for save score after every game
+		return 1;
+	}
+	return 0;
 }
-
-bool Ball::CollisionBallAndDeskOnX(int posBallX, int posDeskX, int sizeDeskX, int sizeDeskY)
-{
-	if (posBallX >= posDeskX && posBallX < posDeskX+sizeDeskX)
-		return true;
-	return false;
-}
-
 float degtorad(int& angle)
 {
 	if (angle >= 360)
 		angle -= 360;
 	return angle > 0 ? (angle * M_PI / 180) : (180 + angle) * M_PI / 180;
+}
+
+
+int GenerateAngle()
+{
+	srand(time(NULL));
+	int value = 20;
+	while (true)
+	{
+		if ((value = -60 +rand()%120) <=-20 || value >= 20)
+		{
+			return value;
+		}
+	}
 }

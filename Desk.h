@@ -6,7 +6,7 @@
 class Desk 
 {
     public:
-    Desk(const int SizeWindowHor, const int SizeWindowVert, int sizeRectHor= 100, int sizeRectVert = 30);
+    Desk(const int SizeWindowHor, const int SizeWindowVert, int sizeRectHor= 100, int sizeRectVert = 20);
     void Move();
     void CheckCollision(int SizeWindowHor, int SizeWindowVert, int valueSensor);
     void CheckCollisionKeyPressed(int SizeWindowHor, int SizeWindowVert);
