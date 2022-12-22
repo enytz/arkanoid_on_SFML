@@ -27,7 +27,7 @@ class Game
         bool GameOver();
         void CollisionDeskAndBall();
         void SaveResult();
-        void PrintResult();
+        void ShowResult();
         Window window;
         Ball ball;
         Desk desk;

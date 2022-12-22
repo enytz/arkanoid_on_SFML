@@ -2,7 +2,6 @@
 #include <iostream>
 
 Ball::Ball(const int SizeWindowHor, const int SizeWindowVert,const float radius)
-    //:angle(GenerateAngle()), speedX(10), speedY(10), dx(speedX* cos(degtorad(angle))), dy(speedY* sin(degtorad(angle))), collision(0), scoreCollisions(0)        // add set settings for angle
 {
     ball.setRadius(radius);
     ball.setFillColor(sf::Color::Blue);
@@ -50,14 +49,14 @@ bool Ball::CollisionWithFieldAndBall(const int sizeHor,const int sizeVert, const
 	float radius = ball.getRadius();
 	sf::Vector2f ballPosition = ball.getPosition();
 
-	//  check collision with vertical field line
+	//  check collision with horizontal field line
 	if (ballPosition.x <= 0 || ballPosition.x+2*radius >= sizeHor)
 	{
 		angle *=-1;
 		return 1;
 	}
 
-	// check collison with horizontal field line
+	// check collison with vertical field line
 	if (ballPosition.y <= 0)
 		{
 			if (angle < 0)
@@ -65,6 +64,10 @@ bool Ball::CollisionWithFieldAndBall(const int sizeHor,const int sizeVert, const
 			else
 				angle += 180;
 			speedX *= -1;
+			if (radius + ballPosition.y <= 0 )
+			{
+				ballPosition.y = 0;
+			}
 			return 1;
 		}
 	if (ballPosition.y+2*radius >= sizeVert)
