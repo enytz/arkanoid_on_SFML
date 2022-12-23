@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game()
-    : window("desk and ball"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT), state (true) 
+    : window("desk and ball"), ball(SIZE_HOR,SIZE_VERT), desk(SIZE_HOR,SIZE_VERT), state (true), quitTheGame(false) 
     {
         if (!font.loadFromFile("/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf"))
             std::cout<<"Error reading font"<<std::endl;
@@ -18,7 +18,7 @@ void Game::LateUpdate()
 {
     desk.CheckCollision(SIZE_HOR, SIZE_VERT,ttyData.get_value_sensor());
     ball.CheckCollision(SIZE_HOR, SIZE_VERT,desk.GetRefRect().getSize().x,desk.GetRefRect().getSize().y, desk.GetRefRect().getPosition().x, state);
-    desk.CheckCollisionKeyPressed(SIZE_HOR, SIZE_VERT);
+    //desk.CheckCollisionKeyPressed(SIZE_HOR, SIZE_VERT);
 }
 
 void Game::Draw()
@@ -74,6 +74,7 @@ bool Game::Restart()
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
         {
             state = false; // for case if IsQuit or IsOpen generate quit
+            quitTheGame = true;
             return false;
         }
     }
@@ -81,7 +82,7 @@ bool Game::Restart()
 
 void Game::ReadDataTTY()
 {
-    ttyData.read_data(state);
+    ttyData.read_data(state,quitTheGame);
 }
 
 bool Game::GameOver()

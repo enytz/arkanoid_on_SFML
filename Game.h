@@ -33,6 +33,7 @@ class Game
         Desk desk;
         TTY ttyData;
         std::atomic<bool> state;
+        std::atomic<bool> quitTheGame;
         sf::Font font;
         std::string fileResultScore{"DataResult.txt"};
 

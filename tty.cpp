@@ -67,26 +67,28 @@ TTY::~TTY()
 {
     tcsetattr(serial_port,TCSANOW, &oldtty);
     close(serial_port);
-    //std::cout<<"~tty";
-    //std::cout.flush();
 }
 
-void TTY::read_data(std::atomic<bool>& state)
+void TTY::read_data(std::atomic<bool>& state, std::atomic<bool>& quitTheGame)
 {
-    while (state)
+    while (!quitTheGame)
     {
-        //Simple_timer st;
-        tcflush(serial_port,TCIFLUSH);
-        int num_bytes = read(serial_port,&buf,sizeof(buf));
-        if (num_bytes <0)
-            {
-                perror("Error reading ");
-				state = false;
-                return;
-            }
-        buf_int = char_to_int(buf);
-        //write_log_sensor_data(buf);
-        std::this_thread::sleep_for(std::chrono::milliseconds(TIME_REQUEST));     // request every delta time
+        while (state)
+        {
+            //Simple_timer st;
+            tcflush(serial_port,TCIFLUSH);
+            int num_bytes = read(serial_port,&buf,sizeof(buf));
+            if (num_bytes <0)
+                {
+                    perror("Error reading ");
+                    state = false;
+                    return;
+                }
+            buf_int = char_to_int(buf);
+            //write_log_sensor_data(buf);
+            std::this_thread::sleep_for(std::chrono::milliseconds(TIME_REQUEST));     // request every delta time
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(TIME_REQUEST*3));
     }
 }
 

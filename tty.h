@@ -19,7 +19,7 @@ struct TTY
     public:
     	TTY();
     	~TTY();
-    	void read_data(std::atomic<bool>& state);
+    	void read_data(std::atomic<bool>& state,std::atomic<bool>& quitTheGame);
     	int get_value_sensor() const;
 		void write_log_sensor_data(const char* buf);
     private:
